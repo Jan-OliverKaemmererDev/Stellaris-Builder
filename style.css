@@ -352,3 +352,89 @@ footer {
     width: 100%;
     text-align: center;
 }
+
+/* ----------------------------------------------------------- */
+/* 5. RESPONSIVE DESIGN (Smartphone Optimierung)             */
+/* ----------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    /* Header-Anpassung: Ressourcen untereinander oder kompakter */
+    header {
+        padding: 15px 20px;
+    }
+
+    .header-content h1 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    #resources {
+        gap: 10px;
+        font-size: 0.85rem;
+    }
+
+    .res-item {
+        padding: 5px 10px;
+    }
+
+    /* Main-Bereich: Weniger Padding an den Seiten */
+    main {
+        padding: 20px 15px;
+    }
+
+    .main-header h2 {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    /* Karten-Anpassung: Bild und Text untereinander stapeln */
+    .building-card {
+        flex-direction: column; /* Bild über den Text */
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .building-image {
+        width: 100%;       /* Bild nutzt volle Breite der Karte */
+        max-width: 250px;  /* Aber nicht zu riesig */
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    .card-content {
+        width: 100%;
+    }
+
+    /* Button in der mobilen Ansicht zentrieren statt ganz rechts */
+    .building-card button {
+        margin-left: 0;
+        margin-top: 15px;
+        width: 100%; /* Button über die ganze Breite für bessere Klickbarkeit */
+    }
+
+    /* Side-Menu: Etwas schmaler für kleine Bildschirme */
+    .side-menu {
+        width: 280px;
+    }
+
+    .menu-links a {
+        font-size: 16px;
+        padding: 12px 0;
+    }
+}
+
+/* Extra kleine Bildschirme (z.B. iPhone SE) */
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .menu-toggle {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+}
