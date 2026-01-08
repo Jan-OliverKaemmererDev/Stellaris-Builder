@@ -3,47 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stellaris Builder - Friedliches Weltraumspiel</title>
+    <title>Stellaris Builder | Single Player</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <h1>Stellaris Builder</h1>
-        <div id="resources">
-            <span>Metall: <strong id="metal">0</strong></span>
-            <span>Energie: <strong id="energy">0</strong></span>
+        <div class="header-content">
+            <h1>STELLARIS BUILDER</h1>
+            <div id="resources">
+                <div class="res-item">Metall: <span id="metal">0</span></div>
+                <div class="res-item">Energie: <span id="energy">0</span></div>
+                <div class="res-item">Spielzeit: <span id="play-time">00:00:00</span></div>
+            </div>
+
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </button>
         </div>
     </header>
 
+    <div id="sideMenu" class="side-menu" role="navigation" aria-label="Side Navigation">
+        <div class="menu-header">
+            <span class="close-btn" onclick="toggleMenu()" aria-label="Close menu">×</span>
+        </div>
+    
+        <div class="menu-links">
+            <div class="menu-title-static">DATEN-ARCHIV</div>
+        
+            <a href="#" onclick="downloadSave()">💾 Exportieren</a>
+        
+            <label for="importFile" class="import-link-style">
+            📂 Importieren
+            </label>
+            <input type="file" id="importFile" accept=".json" onchange="importSave(event)" style="display:none;">
+        
+            <hr>
+        
+            <a href="#" onclick="resetGame()" class="danger-link">⚠️ Spielstand löschen</a>
+        </div>
+    </div>
+
     <main>
-        <section class="buildings">
-            <h2>Gebäude</h2>
-            <div class="card">
+        <div class="main-header">
+            <h2>Kommandozentrale</h2>
+        </div>
+
+        <section class="photo-section">
+            <div class="building-card">
                 <h3>Metallmine</h3>
-                <p>Produziert Metall basierend auf Energie.</p>
                 <p>Level: <span id="mine-level">0</span></p>
-                <button onclick="upgradeBuilding('mine')">Ausbauen (Kosten: <span id="mine-cost">10</span> Metall)</button>
+                <p>Kosten: <span id="mine-cost">10</span> Metall</p>
+                <button onclick="upgradeBuilding('mine')">AUSBAUEN</button>
             </div>
 
-            <div class="card">
+            <div class="building-card">
                 <h3>Solarkraftwerk</h3>
-                <p>Liefert die nötige Energie.</p>
                 <p>Level: <span id="plant-level">0</span></p>
-                <button onclick="upgradeBuilding('powerPlant')">Ausbauen (Kosten: <span id="plant-cost">15</span> Metall)</button>
+                <p>Kosten: <span id="plant-cost">15</span> Metall</p>
+                <button onclick="upgradeBuilding('powerPlant')">AUSBAUEN</button>
             </div>
         </section>
 
-        <section class="save-management">
-            <h2>Datenbank & Sicherheit</h2>
-            <button class="btn-save" onclick="downloadSave()">Spielstand herunterladen (.json)</button>
-            <div class="import-section">
-                <label for="importFile">Spielstand hochladen:</label>
-                <input type="file" id="importFile" accept=".json" onchange="importSave(event)">
-            </div>
-            <button class="btn-reset" onclick="resetGame()">Spielstand löschen</button>
-        </section>
-    </main>
+    <footer>
+        <div class="footer-content">
+            <p>© 2026 Stellaris Builder - Friedliche Expansion</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>

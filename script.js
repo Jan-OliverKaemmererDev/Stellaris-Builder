@@ -1,47 +1,85 @@
-// Standard-Werte des Spiels
+// Spielzustand
 let gameState = {
-    metal: 10,
+    metal: 50,
     energy: 0,
     mineLevel: 0,
     powerPlantLevel: 0,
-    lastUpdate: Date.now()
+    playedSeconds: 0
 };
 
-// 1. Initialisierung: Spielstand laden
+// Initialisierung
 function init() {
-    const savedData = localStorage.getItem('stellaris_save');
+    const savedData = localStorage.getItem('stellaris_save_v1');
     if (savedData) {
         gameState = JSON.parse(savedData);
+        // BERECHNUNG DER OFFLINE-ZEIT
+        calculateOfflineProgress();
     }
     updateUI();
-    gameLoop();
+    startProduction();
 }
 
-// 2. Game Loop (Produktion alle 1 Sekunde)
-function gameLoop() {
-    setInterval(() => {
-        // Logik: Mine braucht Energie zum Arbeiten
-        let energyProduced = gameState.powerPlantLevel * 2;
-        let metalProduced = Math.min(gameState.mineLevel * 1, energyProduced + 1); 
+function calculateOfflineProgress() {
+    const now = Date.now();
+    const deltaMs = now - gameState.lastTick; // Vergangene Zeit in Millisekunden
+    const deltaSeconds = Math.floor(deltaMs / 1000);
 
-        gameState.metal += metalProduced;
-        gameState.energy = energyProduced;
+    if (deltaSeconds > 0) {
+        // Berechne Produktion pro Sekunde (Logik wie im Loop)
+        let energyForProd = gameState.powerPlantLevel * 10;
+        let metalPerSec = 1;
+        if (energyForProd >= gameState.mineLevel * 2) {
+            metalPerSec += gameState.mineLevel * 5;
+        }
+
+        const totalOfflineMetal = metalPerSec * deltaSeconds;
+        gameState.metal += totalOfflineMetal;
+
+        // Optional: Nachricht an den User
+        alert(`Willkommen zurück! In deiner Abwesenheit (${deltaSeconds}s) wurden ${totalOfflineMetal} Metall produziert.`);
+    }
+    
+    // Zeitstempel nach Berechnung aktualisieren
+    gameState.lastTick = now;
+}
+
+function formatTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return [h, m, s].map(v => v < 10 ? "0" + v : v).join(":");
+}
+
+function startProduction() {
+    setInterval(() => {
+        // Standard-Produktionslogik
+        gameState.energy = gameState.powerPlantLevel * 10;
+        let production = 1;
+        if (gameState.energy >= gameState.mineLevel * 2) {
+            production += gameState.mineLevel * 5;
+        }
+        
+        gameState.metal += production;
+        gameState.playedSeconds++;
+        
+        // WICHTIG: Zeitstempel bei jedem Tick/Speichern aktualisieren
+        gameState.lastTick = Date.now();
 
         updateUI();
-        saveToLocalStorage();
+        saveToLocal();
     }, 1000);
 }
 
-// 3. Gebäude ausbauen
 function upgradeBuilding(type) {
+    let cost = 0;
     if (type === 'mine') {
-        let cost = Math.floor(10 * Math.pow(1.5, gameState.mineLevel));
+        cost = Math.floor(10 * Math.pow(1.6, gameState.mineLevel));
         if (gameState.metal >= cost) {
             gameState.metal -= cost;
             gameState.mineLevel++;
         }
     } else if (type === 'powerPlant') {
-        let cost = Math.floor(15 * Math.pow(1.5, gameState.powerPlantLevel));
+        cost = Math.floor(15 * Math.pow(1.6, gameState.powerPlantLevel));
         if (gameState.metal >= cost) {
             gameState.metal -= cost;
             gameState.powerPlantLevel++;
@@ -50,54 +88,80 @@ function upgradeBuilding(type) {
     updateUI();
 }
 
-// 4. Benutzeroberfläche aktualisieren
 function updateUI() {
     document.getElementById('metal').innerText = Math.floor(gameState.metal);
     document.getElementById('energy').innerText = gameState.energy;
     document.getElementById('mine-level').innerText = gameState.mineLevel;
     document.getElementById('plant-level').innerText = gameState.powerPlantLevel;
+    document.getElementById('play-time').innerText = formatTime(gameState.playedSeconds);
     
-    document.getElementById('mine-cost').innerText = Math.floor(10 * Math.pow(1.5, gameState.mineLevel));
-    document.getElementById('plant-cost').innerText = Math.floor(15 * Math.pow(1.5, gameState.powerPlantLevel));
+    document.getElementById('mine-cost').innerText = Math.floor(10 * Math.pow(1.6, gameState.mineLevel));
+    document.getElementById('plant-cost').innerText = Math.floor(15 * Math.pow(1.6, gameState.powerPlantLevel));
 }
 
-// --- SPEICHER-FUNKTIONEN ---
-
-function saveToLocalStorage() {
-    localStorage.setItem('stellaris_save', JSON.stringify(gameState));
+// Speicher-Logik
+function saveToLocal() {
+    localStorage.setItem('stellaris_save_v1', JSON.stringify(gameState));
 }
 
 function downloadSave() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gameState));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "stellaris_save.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    const blob = new Blob([JSON.stringify(gameState)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `stellaris_backup.json`;
+    a.click();
+    toggleMenu(); // Menü schließen
 }
 
 function importSave(event) {
+    const file = event.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = (e) => {
         try {
-            const importedState = JSON.parse(e.target.result);
-            gameState = importedState;
+            gameState = JSON.parse(e.target.result);
             updateUI();
-            alert("Spielstand erfolgreich geladen!");
+            saveToLocal();
+            alert("Daten erfolgreich geladen!");
+            toggleMenu(); // Menü schließen
         } catch (err) {
-            alert("Fehler: Ungültige Datei.");
+            alert("Ungültige Datei!");
         }
     };
-    reader.readAsText(event.target.files[0]);
+    reader.readAsText(file);
 }
 
 function resetGame() {
-    if(confirm("Möchtest du wirklich neu anfangen?")) {
-        localStorage.removeItem('stellaris_save');
+    if(confirm("Alle Daten löschen?")) {
+        localStorage.removeItem('stellaris_save_v1');
         location.reload();
     }
 }
 
-// Start
+// Funktion zum Öffnen/Schließen des Menüs
+function toggleMenu() {
+    const menu = document.getElementById('sideMenu');
+    // Wir nutzen hier 'active' wie in deiner beispiel-style.css
+    menu.classList.toggle('active');
+}
+
+// Schließe das Menü automatisch nach einem Klick (optional)
+function closeMenu() {
+    document.getElementById('sideMenu').classList.remove('open');
+}
+
+// Modifiziere die bestehenden Funktionen, damit das Menü schließt
+const originalDownload = downloadSave;
+downloadSave = function() {
+    originalDownload();
+    closeMenu();
+};
+
+const originalImport = importSave;
+importSave = function(event) {
+    originalImport(event);
+    closeMenu();
+};
+
 init();

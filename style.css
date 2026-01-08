@@ -1,64 +1,321 @@
+/* ----------------------------------------------------------- */
+/* 1. VARIABLES & FONTS (Übernommen aus deiner Vorlage)        */
+/* ----------------------------------------------------------- */
+:root {
+    --primary-bg: #0c2834;
+    --secondary-bg: #071820;
+    --text-color: #F9F8FD;
+    --accent-color: rgba(2, 140, 220, 0.884);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --border-color: rgba(2, 140, 220, 0.447);
+    --font-main: 'Raleway', sans-serif;
+}
+
+/* ----------------------------------------------------------- */
+/* 2. GLOBAL STYLES                                           */
+/* ----------------------------------------------------------- */
+* { box-sizing: border-box; }
+
 body {
-    background-color: #0b0e14;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-main);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
     margin: 0;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Mindestens 100% der Viewport-Höhe */
 }
 
 header {
+    background-color: var(--primary-bg);
+    padding: 20px 50px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-content {
+    max-width: 1280px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #2c3e50;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
 }
 
-#resources span {
-    margin-left: 20px;
-    font-size: 1.2rem;
-    color: #00d4ff;
-}
-
-.buildings {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.card {
-    background: #1c232d;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #34495e;
-    text-align: center;
-}
-
-button {
-    background: #2980b9;
-    color: white;
+.menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Verteilt die Bars gleichmäßig */
+    width: 35px;                    /* Feste Breite */
+    height: 24px;                   /* Feste Höhe */
+    background: transparent;
     border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1100;                  /* Höher als das Side-Menu */
+    position: relative;
+}
+
+.bar {
+    width: 100%;
+    height: 4px;
+    background-color: var(--text-color, #F9F8FD); /* Fallback Farbe Weiß */
+    border-radius: 2px;
+    display: block;                 /* Wichtig, damit sie angezeigt werden */
+    transition: all 0.3s ease-in-out;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Startposition außerhalb */
+    width: 300px;
+    height: 100%;
+    /* Hintergrundfarbe mit Transparenz basierend auf deinem accent-color */
+    background-color: rgba(7, 24, 32, 0.95); 
+    z-index: 1001;
+    transition: right 0.3s ease-in-out;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border-color);
+}
+
+.side-menu.active {
+    right: 0;
+}
+
+.side-menu.open {
+    width: 250px; /* Breite wenn offen */
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.side-menu ul li {
+    list-style: none;
+    width: 100%;
+}
+
+.side-menu ul li a, 
+.side-menu ul li label {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 20px 30px;
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+
+.menu-links a, .import-link-style {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 15px 0;
+    text-align: center;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.4);
+    cursor: pointer;
+    display: block;
+    transition: all 0.2s;
+}
+
+.menu-links a:hover, .import-link-style:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.menu-links hr {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin: 10px 0;
+}
+
+.danger-link {
+    border: 1px solid #721c24 !important;
+    color: #ff4d4d !important;
+}
+
+.danger-link:hover {
+    background-color: #721c24 !important;
+}
+
+.side-menu ul li a:hover {
+    background-color: var(--accent-color);
+}
+
+.menu-title-static {
+    color: var(--accent-color);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.menu-links {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
+}
+
+.close-btn {
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.menu-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.menu-header-title {
+    padding: 25px 30px;
+    color: var(--accent-color);
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Spezielle Formatierung für den Import-Link */
+.import-label {
+    padding: 15px 30px;
+    display: block;
     cursor: pointer;
     transition: background 0.3s;
 }
 
+.import-label:hover {
+    background-color: var(--accent-color);
+}
+
+.danger-link {
+    color: #ff4d4d !important;
+}
+
+#resources {
+    display: flex;
+    gap: 20px;
+}
+
+.res-item {
+    background: rgba(255,255,255,0.05);
+    padding: 8px 15px;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-color);
+}
+
+/* ----------------------------------------------------------- */
+/* 3. MAIN CONTENT & CARDS                                    */
+/* ----------------------------------------------------------- */
+main {
+    flex-grow: 1; /* Schiebt alles unter sich (den Footer) nach ganz unten */
+    padding: 40px 50px;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.main-header h2 {
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.photo-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.building-card {
+    background-color: var(--primary-bg);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s, border-color 0.3s;
+    text-align: center;
+}
+
+.building-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+}
+
+button {
+    font-family: var(--font-main);
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.3s;
+}
+
 button:hover {
-    background: #3498db;
+    opacity: 0.8;
 }
 
-.save-management {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #2c3e50;
+/* ----------------------------------------------------------- */
+/* 4. SAVE SYSTEM STYLING                                     */
+/* ----------------------------------------------------------- */
+.save-controls {
+    background: rgba(255,255,255,0.02);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px dashed var(--border-color);
 }
 
-.btn-reset { background: #c0392b; margin-top: 10px; }
-.btn-save { background: #27ae60; margin-bottom: 10px; }
+.save-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
 
-input[type="file"] {
-    margin-top: 10px;
-    display: block;
+input[type="file"] { display: none; }
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 12px 24px;
+    cursor: pointer;
+    background: var(--primary-bg);
+    border: 1px solid var(--accent-color);
+    border-radius: 4px;
+}
+
+.btn-danger { background-color: #721c24; }
+
+footer {
+    background-color: var(--primary-bg);
+    width: 100%; 
+    padding: 20px 0;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Optional: Verhindert, dass der Footer bei viel Inhalt gestaucht wird */
+    flex-shrink: 0; 
+}
+
+.footer-content {
+    /* Optional: Begrenzt die Textbreite analog zum Header/Main */
+    max-width: 1280px;
+    width: 100%;
+    text-align: center;
 }
