@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="./img/favicon.png">
     <title>Stellaris Builder | Single Player</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -48,24 +49,106 @@
 
     <main>
         <div class="main-header">
-            <h2>Kommandozentrale</h2>
+            <h2>Minen und Energie</h2>
         </div>
 
         <section class="photo-section">
             <div class="building-card">
-                <h3>Metallmine</h3>
-                <p>Level: <span id="mine-level">0</span></p>
-                <p>Kosten: <span id="mine-cost">10</span> Metall</p>
-                <button onclick="upgradeBuilding('mine')">AUSBAUEN</button>
+                <img src="./img/metallmine.png" alt="Metallmine" class="building-image">
+
+                <div class="card-content">
+                    <h3>Metallmine</h3>
+                    <p>Level: <span id="mine-level">0</span></p>
+                    <p>Kosten: <span id="mine-cost">10</span> Metall</p>
+                    <button onclick="upgradeBuilding('mine')">AUSBAUEN</button>
+                </div>
             </div>
 
             <div class="building-card">
-                <h3>Solarkraftwerk</h3>
-                <p>Level: <span id="plant-level">0</span></p>
-                <p>Kosten: <span id="plant-cost">15</span> Metall</p>
-                <button onclick="upgradeBuilding('powerPlant')">AUSBAUEN</button>
+                <img src="./img/solarkraftwerk.png" alt="Solarkraftwerk" class="building-image">
+
+                <div class="card-content">
+                    <h3>Solarkraftwerk</h3>
+                    <p>Level: <span id="plant-level">0</span></p>
+                    <p>Kosten: <span id="plant-cost">15</span> Metall</p>
+                    <button onclick="upgradeBuilding('powerPlant')">AUSBAUEN</button>
+                </div>
             </div>
         </section>
+
+        <div class="main-header">
+            <h2>Forschungszentrum</h2>
+        </div>
+        <section class="photo-section">
+        <div class="building-card">
+            <div class="card-content">
+                <h3>Antriebstechnik</h3>
+                <p>Level: <span id="propulsion-level">0</span></p>
+                <p>Bonus: Schnellerer Ressourcen-Transport</p>
+                <p>Kosten: <span id="propulsion-cost">100</span> Metall</p>
+                <button onclick="upgradeResearch('propulsion')">FORSCHEN</button>
+            </div>
+        </div>
+
+        <div class="building-card">
+            <div class="card-content">
+                <h3>KI-Automatisierung</h3>
+                <p>Level: <span id="ai-level">0</span></p>
+                <p>Bonus: Reduziert Energiekosten der Minen</p>
+                <p>Kosten: <span id="ai-cost">150</span> Metall</p>
+                <button onclick="upgradeResearch('ai')">FORSCHEN</button>
+            </div>
+        </div>
+
+        <div class="building-card">
+            <div class="card-content">
+                <h3>Fusionsreaktoren</h3>
+                <p>Level: <span id="fusion-level">0</span></p>
+                <p>Bonus: Höhere Energieausbeute</p>
+                <p>Kosten: <span id="fusion-cost">200</span> Metall</p>
+                <button onclick="upgradeResearch('fusion')">FORSCHEN</button>
+            </div>
+        </div>
+        </section>
+
+        <div class="main-header">
+            <h2>Flotte</h2>
+        </div>
+        <section class="photo-section">
+            <div class="building-card">
+                <div class="card-content">
+                    <h3>Transportschiffe</h3>
+                    <p>Anzahl: <span id="transporter-count">0</span></p>
+                    <p>Kosten: <span id="transporter-cost">50</span> Metall</p>
+                    <button onclick="buildShip('transporter')">BAUEN</button>
+                </div>
+            </div>
+
+            <div class="building-card">
+                <div class="card-content">
+                    <h3>Kolonisierungsschiffe</h3>
+                    <p>Anzahl: <span id="colony-count">0</span></p>
+                    <p>Kosten: <span id="colony-cost">500</span> Metall</p>
+                    <button onclick="buildShip('colony')">BAUEN</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="main-header">
+            <h2>Sonnensystem-Station</h2>
+        </div>
+        <section class="photo-section">
+            <div class="building-card">
+                <img src="./img/station.png" alt="Bio-Station" class="building-image">
+                <div class="card-content">
+                    <h3>Bio-Forschungslabor</h3>
+                    <p>Status: <span id="station-status">Nicht gebaut</span></p>
+                    <p>Effekt: Erhöht Spielzeit-Bonus</p>
+                    <p>Kosten: 2000 Metall</p>
+                    <button id="station-btn" onclick="buildStation()">STATION ERRICHTEN</button>
+                </div>
+            </div>
+        </section>     
 
     <footer>
         <div class="footer-content">

@@ -27,12 +27,23 @@ body {
 }
 
 header {
+    background-image: linear-gradient(rgba(12, 40, 52, 0.8), rgba(12, 40, 52, 0.8)), 
+                      url('./img/header-background.png'); /* Achte auf die Dateiendung (.jpg, .png etc.) */
+    
+    background-size: cover;         /* Bild füllt den ganzen Header aus */
+    background-position: center;    /* Bild wird mittig zentriert */
+    background-repeat: no-repeat;
+
     background-color: var(--primary-bg);
     padding: 20px 50px;
     position: sticky;
     top: 0;
     z-index: 999;
     border-bottom: 1px solid var(--border-color);
+
+    min-height: 100px; 
+    display: flex;
+    align-items: center;
 }
 
 .header-content {
@@ -236,9 +247,12 @@ main {
 
 .photo-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: 1fr;
     gap: 24px;
     margin-bottom: 60px;
+    max-width: 600px; 
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .building-card {
@@ -246,13 +260,32 @@ main {
     padding: 24px;
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    transition: transform 0.3s, border-color 0.3s;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
 }
 
 .building-card:hover {
     border-color: var(--accent-color);
-    transform: translateY(-5px);
+}
+
+.building-image {
+    width: 172px;
+    height: 171px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0; /* Verhindert, dass das Bild gequetscht wird */
+}
+
+.card-content {
+    flex: 1;
+}
+
+.building-card button {
+    margin-left: auto; /* Schiebt den Button so weit wie möglich nach rechts */
+    align-self: center;
 }
 
 button {

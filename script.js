@@ -4,7 +4,13 @@ let gameState = {
     energy: 0,
     mineLevel: 0,
     powerPlantLevel: 0,
-    playedSeconds: 0
+    playedSeconds: 0,
+    propulsionLevel: 0,
+    aiLevel: 0,
+    fusionLevel: 0,
+    transporterCount: 0,
+    colonyCount: 0,
+    hasBioStation: false
 };
 
 // Initialisierung
@@ -88,15 +94,55 @@ function upgradeBuilding(type) {
     updateUI();
 }
 
+function upgradeResearch(type) {
+    let cost = 0;
+    if (type === 'propulsion') cost = Math.floor(100 * Math.pow(1.8, gameState.propulsionLevel));
+    if (type === 'ai') cost = Math.floor(150 * Math.pow(1.8, gameState.aiLevel));
+    
+    if (gameState.metal >= cost) {
+        gameState.metal -= cost;
+        if (type === 'propulsion') gameState.propulsionLevel++;
+        if (type === 'ai') gameState.aiLevel++;
+        updateUI();
+        saveToLocal();
+    } else {
+        alert("Nicht genug Metall für die Forschung!");
+    }
+}
+
+function buildStation() {
+    if (gameState.metal >= 2000 && !gameState.hasBioStation) {
+        gameState.metal -= 2000;
+        gameState.hasBioStation = true;
+        updateUI();
+        saveToLocal();
+    }
+}
+
+function buildShip(type) {
+    let cost = (type === 'transporter') ? 50 : 500;
+    if (gameState.metal >= cost) {
+        gameState.metal -= cost;
+        if (type === 'transporter') gameState.transporterCount++;
+        if (type === 'colony') gameState.colonyCount++;
+        updateUI();
+        saveToLocal();
+    }
+}
+
+
+
 function updateUI() {
     document.getElementById('metal').innerText = Math.floor(gameState.metal);
     document.getElementById('energy').innerText = gameState.energy;
     document.getElementById('mine-level').innerText = gameState.mineLevel;
     document.getElementById('plant-level').innerText = gameState.powerPlantLevel;
     document.getElementById('play-time').innerText = formatTime(gameState.playedSeconds);
-    
     document.getElementById('mine-cost').innerText = Math.floor(10 * Math.pow(1.6, gameState.mineLevel));
     document.getElementById('plant-cost').innerText = Math.floor(15 * Math.pow(1.6, gameState.powerPlantLevel));
+    document.getElementById('propulsion-level').innerText = gameState.propulsionLevel;
+    document.getElementById('transporter-count').innerText = gameState.transporterCount;
+    document.getElementById('station-status').innerText = gameState.hasBioStation ? "Aktiv (Bio-Bonus +20%)" : "Inaktiv";
 }
 
 // Speicher-Logik
