@@ -367,7 +367,18 @@ footer {
     padding: 0 20px;
     text-align: center;
     font-size: 0.9rem;
-    opacity: 0.7;
+    opacity: 0.8;
+}
+
+.footer-content a {
+    text-decoration: none;
+    transition: color 0.3s;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.footer-content a:hover {
+    color: var(--accent-color);
 }
 
 /* ----------------------------------------------------------- */

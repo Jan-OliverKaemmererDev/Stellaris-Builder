@@ -1,347 +1,230 @@
-// Spielzustand
-let gameState = {
-    metal: 50,
-    energy: 0,
-    mineLevel: 0,
-    powerPlantLevel: 0,
-    playedSeconds: 0,
-    propulsionLevel: 0,
-    aiLevel: 0,
-    fusionLevel: 0,
-    transporterCount: 0,
-    cargoCount: 0,
-    colonyCount: 0,
-    hasBioStation: false,
-    lastTick: Date.now()
+// 1. GLOBALER SPIELZUSTAND
+var gameState = {
+    metal: 50, energy: 0, mineLevel: 0, powerPlantLevel: 0,
+    playedSeconds: 0, propulsionLevel: 0, aiLevel: 0,
+    fusionLevel: 0, transporterCount: 0, cargoCount: 0,
+    colonyCount: 0, hasBioStation: false, lastTick: Date.now()
 };
 
-// Initialisierung
+// 2. INITIALISIERUNG & SPEICHERUNG
 function init() {
-    const savedData = localStorage.getItem('stellaris_save_v1');
+    var savedData = localStorage.getItem('stellaris_save_v1');
     if (savedData) {
-        let loadedState = JSON.parse(savedData);
-        
-        // KRITISCH: Falls der geladene Wert NaN ist, nutzen wir den Standard-Staat
-        if (isNaN(loadedState.metal)) {
-            console.error("Fehlerhafter Spielstand entdeckt, lade Standardwerte...");
-        } else {
-            gameState = loadedState;
-        }
-        
-        calculateOfflineProgress();
+        applyLoadedData(JSON.parse(savedData));
     }
     updateUI();
     startProduction();
 }
 
+function applyLoadedData(loaded) {
+    if (loaded && !isNaN(loaded.metal)) {
+        gameState = loaded;
+        calculateOfflineProgress();
+    }
+}
+
+function saveToLocal() {
+    localStorage.setItem('stellaris_save_v1', JSON.stringify(gameState));
+}
+
+// 3. OFFLINE-FORTSCHRITT
 function calculateOfflineProgress() {
-    const now = Date.now();
-    
-    // Sicherheitsabfrage: Falls lastTick fehlt oder ungültig ist, brich ab
-    if (!gameState.lastTick || isNaN(gameState.lastTick)) {
-        gameState.lastTick = now;
-        return;
+    var now = Date.now();
+    var diff = (now - gameState.lastTick) / 1000;
+    if (diff > 60) {
+        gameState.metal += (getProductionPerSecond() * diff);
     }
-
-    const deltaMs = now - gameState.lastTick;
-    const deltaSeconds = Math.floor(deltaMs / 1000);
-
-    if (deltaSeconds > 0) {
-        let energyForProd = gameState.powerPlantLevel * (10 + (gameState.fusionLevel * 5));
-        let metalPerSec = 1;
-        if (energyForProd >= gameState.mineLevel * 2) {
-            metalPerSec += gameState.mineLevel * 5;
-        }
-
-        const totalOfflineMetal = metalPerSec * deltaSeconds;
-        
-        // Nur addieren, wenn das Ergebnis eine gültige Zahl ist
-        if (!isNaN(totalOfflineMetal)) {
-            gameState.metal += totalOfflineMetal;
-            alert(`Willkommen zurück! In deiner Abwesenheit (${deltaSeconds}s) wurden ${Math.floor(totalOfflineMetal)} Metall produziert.`);
-        }
-    }
-    
     gameState.lastTick = now;
 }
 
-function formatTime(seconds) {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return [h, m, s].map(v => v < 10 ? "0" + v : v).join(":");
-}
-
+// 4. PRODUKTIONS-LOGIK
 function startProduction() {
-    setInterval(() => {
-        // 1. Energie berechnen: Basis (10) + Bonus durch Fusionsforschung (+5 pro Level)
-        let energyPerPlant = 10 + (gameState.fusionLevel * 5);
-        gameState.energy = gameState.powerPlantLevel * energyPerPlant;
-
-        // 2. Basis-Produktion (Startwert)
-        let productionPerSecond = 1;
-
-        // 3. Minen-Produktion hinzufügen
-        // Nur wenn Energie >= Mine-Level * 2
-        if (gameState.energy >= gameState.mineLevel * 2) {
-            productionPerSecond += (gameState.mineLevel * 5); 
-        }
-
-        // 4. Boni berechnen
-        let cargoBonus = 1 + (gameState.cargoCount * 0.05); // +5% pro Logistikschiff
-        let aiBonus = 1 + (gameState.aiLevel * 0.1);       // +10% pro KI-Level
-        let bioBonus = gameState.hasBioStation ? 1.2 : 1;   // +20% durch Bio-Station
-
-        // 5. Gesamte Produktion mit ALLEN Boni multiplizieren
-        // Das ist der entscheidende Schritt für die Geschwindigkeit!
-        let totalProduction = productionPerSecond * cargoBonus * aiBonus * bioBonus;
-
-        // 6. Produktion zum Metall-Stand hinzufügen (Geteilt durch 10 für den 100ms Takt)
-        gameState.metal += (totalProduction / 10);
-
-        // 7. Spielzeit hochzählen
-        if (Math.floor(Date.now() / 1000) !== Math.floor(gameState.lastTick / 1000)) {
-            gameState.playedSeconds++;
-        }
-        
-        gameState.lastTick = Date.now();
-        updateUI();
-        saveToLocal();
-    }, 100); 
+    setInterval(function() {
+        processTick();
+    }, 100);
 }
 
-function upgradeBuilding(type) {
-    let cost = 0;
-    if (type === 'mine') {
-        cost = Math.floor(10 * Math.pow(1.6, gameState.mineLevel));
-        if (gameState.metal >= cost) {
-            gameState.metal -= cost;
-            gameState.mineLevel++;
-            saveToLocal(); // WICHTIG: Sofort speichern!
-        }
-    } else if (type === 'powerPlant') {
-        cost = Math.floor(15 * Math.pow(1.6, gameState.powerPlantLevel));
-        if (gameState.metal >= cost) {
-            gameState.metal -= cost;
-            gameState.powerPlantLevel++;
-            saveToLocal(); // WICHTIG: Sofort speichern!
-        }
+function processTick() {
+    updateEnergyState();
+    var productionAmount = getProductionPerSecond();
+    gameState.metal += (productionAmount / 10);
+    updatePlayTime();
+    gameState.lastTick = Date.now();
+    updateUI();
+    saveToLocal();
+}
+
+function updateEnergyState() {
+    var energyPerPlant = 10 + (gameState.fusionLevel * 5);
+    gameState.energy = gameState.powerPlantLevel * energyPerPlant;
+}
+
+function getProductionPerSecond() {
+    var prod = 1;
+    var requiredEnergy = gameState.mineLevel * 2;
+    if (gameState.mineLevel > 0 && gameState.energy >= requiredEnergy) {
+        prod += (gameState.mineLevel * 5);
+    } else if (gameState.mineLevel > 0 && gameState.energy > 0) {
+        prod += (gameState.energy / 2) * 5; 
     }
+    var cargoBonus = 1 + (gameState.cargoCount * 0.05);
+    var aiBonus = 1 + (gameState.aiLevel * 0.1);
+    var bioBonus = gameState.hasBioStation ? 1.2 : 1;
+    return prod * cargoBonus * aiBonus * bioBonus;
+}
+
+function updatePlayTime() {
+    var nowS = Math.floor(Date.now() / 1000);
+    var lastS = Math.floor(gameState.lastTick / 1000);
+    if (nowS !== lastS) {
+        gameState.playedSeconds++;
+    }
+}
+
+// 5. UI AKTUALISIERUNG
+function updateUI() {
+    updateResourceDisplay();
+    updateBuildingDisplay();
+    updateResearchDisplay();
+    updateShipAndStationDisplay();
+}
+
+function updateResourceDisplay() {
+    setVal('metal', Math.floor(gameState.metal).toLocaleString());
+    setVal('energy', gameState.energy);
+    var menuTime = document.getElementById('menu-play-time');
+    if (menuTime) menuTime.innerText = formatTime(gameState.playedSeconds);
+}
+
+function updateBuildingDisplay() {
+    setVal('mine-level', gameState.mineLevel);
+    setVal('mine-cost', calcCost(10, 1.6, gameState.mineLevel));
+    setVal('plant-level', gameState.powerPlantLevel);
+    setVal('plant-cost', calcCost(15, 1.6, gameState.powerPlantLevel));
+}
+
+function updateResearchDisplay() {
+    setVal('propulsion-level', gameState.propulsionLevel);
+    setVal('propulsion-cost', calcCost(100, 1.8, gameState.propulsionLevel));
+    setVal('ai-level', gameState.aiLevel);
+    setVal('ai-cost', calcCost(150, 1.8, gameState.aiLevel));
+    setVal('fusion-level', gameState.fusionLevel);
+    setVal('fusion-cost', calcCost(200, 1.8, gameState.fusionLevel));
+}
+
+function updateShipAndStationDisplay() {
+    setVal('cargo-count', gameState.cargoCount);
+    setVal('cargo-cost', calcCost(150, 1.5, gameState.cargoCount));
+    setVal('transporter-count', gameState.transporterCount);
+    setVal('transporter-cost', calcCost(500, 1.6, gameState.transporterCount));
+    setVal('colony-count', gameState.colonyCount);
+    setVal('colony-cost', calcCost(1000, 2.0, gameState.colonyCount));
+    handleStationUI();
+}
+
+function handleStationUI() {
+    var status = document.getElementById('station-status');
+    var btn = document.getElementById('station-btn');
+    if (gameState.hasBioStation) {
+        if (status) status.innerText = "Aktiv (+20% Produktion)";
+        if (btn) btn.style.display = "none";
+    }
+}
+
+// 6. UPGRADE-FUNKTIONEN
+function upgradeBuilding(type) {
+    if (type === 'mine') performPurchase('mineLevel', 10, 1.6);
+    if (type === 'powerPlant') performPurchase('powerPlantLevel', 15, 1.6);
     updateUI();
 }
 
 function upgradeResearch(type) {
-    let cost = 0;
-    
-    // Kostenberechnung für die verschiedenen Forschungszweige
-    if (type === 'propulsion') {
-        cost = Math.floor(100 * Math.pow(1.8, gameState.propulsionLevel));
-    } else if (type === 'ai') {
-        cost = Math.floor(150 * Math.pow(1.8, gameState.aiLevel));
-    } else if (type === 'fusion') {
-        // Kosten für Fusionsreaktoren berechnen
-        cost = Math.floor(200 * Math.pow(1.8, gameState.fusionLevel));
-    }
-    
-    // Prüfen, ob genug Metall vorhanden ist
-    if (gameState.metal >= cost) {
-        gameState.metal -= cost;
-        
-        // Level des entsprechenden Typs erhöhen
-        if (type === 'propulsion') gameState.propulsionLevel++;
-        if (type === 'ai') gameState.aiLevel++;
-        if (type === 'fusion') gameState.fusionLevel++; // Dies hat gefehlt!
-        
-        updateUI();
-        saveToLocal();
-    } else {
-        alert("Nicht genug Metall für die Forschung!");
-    }
+    if (type === 'propulsion') performPurchase('propulsionLevel', 100, 1.8);
+    if (type === 'ai') performPurchase('aiLevel', 150, 1.8);
+    if (type === 'fusion') performPurchase('fusionLevel', 200, 1.8);
+    updateUI();
 }
 
 function buildShip(type) {
-    let cost = 0;
-    if (type === 'transporter') cost = 50;
-    if (type === 'colony') cost = 500;
-    if (type === 'cargo') cost = 150; // Kosten für das Logistikschiff
+    if (type === 'cargo') performPurchase('cargoCount', 150, 1.5);
+    if (type === 'transporter') performPurchase('transporterCount', 500, 1.6);
+    if (type === 'colony') performPurchase('colonyCount', 1000, 2.0);
+    updateUI();
+}
 
+function buildStation() {
+    if (gameState.hasBioStation) return alert("Bereits gebaut!");
+    if (gameState.metal >= 2000) {
+        gameState.metal -= 2000;
+        gameState.hasBioStation = true;
+        saveToLocal();
+        updateUI();
+    } else {
+        alert("Nicht genug Metall!");
+    }
+}
+
+function performPurchase(key, base, factor) {
+    var cost = calcCost(base, factor, gameState[key]);
     if (gameState.metal >= cost) {
         gameState.metal -= cost;
-        if (type === 'transporter') gameState.transporterCount++;
-        if (type === 'colony') gameState.colonyCount++;
-        if (type === 'cargo') gameState.cargoCount++; // Erhöht die Anzahl
-        
-        updateUI();
+        gameState[key]++;
         saveToLocal();
     } else {
         alert("Nicht genug Metall!");
     }
 }
 
-function buildStation() {
-    const cost = 2000; // Kosten wie im HTML angezeigt
-    
-    // Prüfen, ob schon gebaut oder nicht genug Metall
-    if (gameState.hasBioStation) {
-        alert("Das Bio-Forschungslabor wurde bereits errichtet!");
-        return;
-    }
-
-    if (gameState.metal >= cost) {
-        gameState.metal -= cost;
-        gameState.hasBioStation = true; // Aktiviert den 20% Bonus
-        
-        updateUI();
-        saveToLocal();
-        alert("Bio-Forschungslabor erfolgreich errichtet! Deine Produktion steigt um 20%.");
-    } else {
-        alert("Nicht genug Metall für das Forschungslabor!");
-    }
+// 7. HILFSFUNKTIONEN
+function calcCost(base, factor, level) {
+    return Math.floor(base * Math.pow(factor, level));
 }
 
-function updateUI() {
-    // Ressourcen
-    document.getElementById('metal').innerText = Math.floor(gameState.metal).toLocaleString();
-    document.getElementById('energy').innerText = gameState.energy;
-    const menuTime = document.getElementById('menu-play-time');
-    if (menuTime) {
-        menuTime.innerText = formatTime(gameState.playedSeconds);
-    }
-
-    // Energie-Anzeige
-    const energyElement = document.getElementById('energy');
-    energyElement.innerText = gameState.energy;
-
-    // Kleiner visueller Hinweis: Energie wird rot, wenn die Minen zu viel verbrauchen
-    if (gameState.energy < gameState.mineLevel * 2) {
-        energyElement.style.color = "#ff4d4d";
-    } else {
-        energyElement.style.color = "var(--text-color)";
-    }
-
-    // Level-Anzeigen
-    document.getElementById('mine-level').innerText = gameState.mineLevel;
-    document.getElementById('plant-level').innerText = gameState.powerPlantLevel;
-
-    // Minen
-    document.getElementById('mine-level').innerText = gameState.mineLevel;
-    document.getElementById('mine-cost').innerText = Math.floor(10 * Math.pow(1.6, gameState.mineLevel));
-    document.getElementById('plant-level').innerText = gameState.powerPlantLevel;
-    document.getElementById('plant-cost').innerText = Math.floor(15 * Math.pow(1.6, gameState.powerPlantLevel));
-
-    // Forschung & Flotte (Sicherstellen, dass diese IDs in der index.html existieren!)
-    if(document.getElementById('propulsion-level')) {
-        document.getElementById('propulsion-level').innerText = gameState.propulsionLevel;
-    }
-    if(document.getElementById('propulsion-cost')) {
-        let propulsionCost = Math.floor(100 * Math.pow(1.8, gameState.propulsionLevel));
-        document.getElementById('propulsion-cost').innerText = propulsionCost.toLocaleString();
-    }
-
-    if(document.getElementById('fusion-level')) {
-        document.getElementById('fusion-level').innerText = gameState.fusionLevel;
-    }
-    if(document.getElementById('fusion-cost')) {
-        let fusionCost = Math.floor(200 * Math.pow(1.8, gameState.fusionLevel));
-        document.getElementById('fusion-cost').innerText = fusionCost;
-    }
-    if(document.getElementById('ai-level')) {
-        document.getElementById('ai-level').innerText = gameState.aiLevel;
-    }
-    if(document.getElementById('ai-cost')) {
-        let aiCost = Math.floor(150 * Math.pow(1.8, gameState.aiLevel));
-        document.getElementById('ai-cost').innerText = aiCost;
-    }
-    if(document.getElementById('cargo-count')) document.getElementById('cargo-count').innerText = gameState.cargoCount;
-    if(document.getElementById('transporter-count')) document.getElementById('transporter-count').innerText = gameState.transporterCount;
-    if(document.getElementById('colony-count')) document.getElementById('colony-count').innerText = gameState.colonyCount;
-    
-    // Status der Station
-    const statusElement = document.getElementById('station-status');
-    const stationBtn = document.getElementById('station-btn');
-
-    if (gameState.hasBioStation) {
-        statusElement.innerText = "Aktiv (Bio-Bonus +20%)";
-        statusElement.style.color = "#4dff88"; // Schönes Grün für "Aktiv"
-        if (stationBtn) {
-            stationBtn.disabled = true;
-            stationBtn.innerText = "ERRICHTET";
-            stationBtn.style.opacity = "0.5";
-        }
-    } else {
-        statusElement.innerText = "Inaktiv";
-        statusElement.style.color = "var(--text-color)";
-    }
+function setVal(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.innerText = value;
 }
 
-// Speicher-Logik
-function saveToLocal() {
-    localStorage.setItem('stellaris_save_v1', JSON.stringify(gameState));
+function formatTime(s) {
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    function pad(n) { return n < 10 ? '0' + n : n; }
+    return pad(h) + ":" + pad(m) + ":" + pad(sec);
+}
+
+// 8. MENÜ & DATEI-SYSTEM
+function toggleMenu() {
+    document.getElementById('sideMenu').classList.toggle('active');
 }
 
 function downloadSave() {
-    const blob = new Blob([JSON.stringify(gameState)], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    var data = JSON.stringify(gameState);
+    var blob = new Blob([data], {type: 'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
     a.href = url;
-    a.download = `stellaris_backup.json`;
+    a.download = 'stellaris_save.json';
     a.click();
-    toggleMenu(); 
 }
 
 function importSave(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const importedState = JSON.parse(e.target.result);
-            // Sicherheitscheck: Nur übernehmen, wenn es ein Objekt ist
-            if (typeof importedState === 'object') {
-                gameState = importedState;
-                updateUI();
-                saveToLocal();
-                alert("Daten erfolgreich geladen!");
-                toggleMenu();
-                location.reload(); // Seite neu laden, um alle Timer zu resetten
-            }
-        } catch (err) {
-            alert("Ungültige Datei!");
-        }
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        applyLoadedData(JSON.parse(e.target.result));
+        saveToLocal();
+        location.reload();
     };
     reader.readAsText(file);
 }
 
 function resetGame() {
-    if(confirm("Alle Daten löschen? Dies setzt deinen Fortschritt komplett zurück.")) {
+    if (confirm("Spielstand wirklich löschen?")) {
         localStorage.removeItem('stellaris_save_v1');
-        location.reload(); // Erzwingt den Neustart mit dem Standard-gameState
+        location.reload();
     }
 }
 
-// Funktion zum Öffnen/Schließen des Menüs
-function toggleMenu() {
-    const menu = document.getElementById('sideMenu');
-    // Wir nutzen hier 'active' wie in deiner beispiel-style.css
-    menu.classList.toggle('active');
-}
-
-// Schließe das Menü automatisch nach einem Klick (optional)
-function closeMenu() {
-    document.getElementById('sideMenu').classList.remove('open');
-}
-
-// Modifiziere die bestehenden Funktionen, damit das Menü schließt
-const originalDownload = downloadSave;
-downloadSave = function() {
-    originalDownload();
-    closeMenu();
-};
-
-const originalImport = importSave;
-importSave = function(event) {
-    originalImport(event);
-    closeMenu();
-};
-
+// START
 init();
