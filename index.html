@@ -12,27 +12,34 @@
     <header>
         <div class="header-content">
             <h1>STELLARIS BUILDER</h1>
+
             <div id="resources">
                 <div class="res-item">Metall: <span id="metal">0</span></div>
                 <div class="res-item">Energie: <span id="energy">0</span></div>
-                <div class="res-item">Spielzeit: <span id="play-time">00:00:00</span></div>
             </div>
 
-            <button class="menu-toggle" onclick="toggleMenu()">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </button>
+            <div class="menu-toggle-container">
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </button>
+            </div>
         </div>
     </header>
 
-    <div id="sideMenu" class="side-menu" role="navigation" aria-label="Side Navigation">
+    <div id="sideMenu" class="side-menu" role="navigation">
         <div class="menu-header">
-            <span class="close-btn" onclick="toggleMenu()" aria-label="Close menu">×</span>
+            <span class="close-btn" onclick="toggleMenu()">×</span>
         </div>
     
         <div class="menu-links">
             <div class="menu-title-static">DATEN-ARCHIV</div>
+
+            <div class="menu-stats" style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); margin-bottom: 10px;">
+                <p style="margin: 0; font-size: 0.8rem; color: var(--accent-color); letter-spacing: 1px;">SPIELZEIT</p>
+                <h2 id="menu-play-time" style="margin: 5px 0 0 0; font-family: monospace;">00:00:00</h2>
+            </div>
         
             <a href="#" onclick="downloadSave()">💾 Exportieren</a>
         

@@ -203,7 +203,10 @@ function updateUI() {
     // Ressourcen
     document.getElementById('metal').innerText = Math.floor(gameState.metal).toLocaleString();
     document.getElementById('energy').innerText = gameState.energy;
-    document.getElementById('play-time').innerText = formatTime(gameState.playedSeconds);
+    const menuTime = document.getElementById('menu-play-time');
+    if (menuTime) {
+        menuTime.innerText = formatTime(gameState.playedSeconds);
+    }
 
     // Energie-Anzeige
     const energyElement = document.getElementById('energy');

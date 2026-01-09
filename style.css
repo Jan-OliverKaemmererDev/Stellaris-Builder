@@ -35,11 +35,11 @@ header {
     background-repeat: no-repeat;
 
     background-color: var(--primary-bg);
-    padding: 20px 50px;
+    padding: 10px 20px;
     position: sticky;
     top: 0;
-    z-index: 999;
-    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+    border-bottom: 2px solid var(--border-color);
 
     min-height: 100px; 
     display: flex;
@@ -47,20 +47,35 @@ header {
 }
 
 .header-content {
-    max-width: 1280px;
+    max-width: 1400px; /* Erlaubt mehr Breite auf großen Monitoren */
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Verteilt links, mitte, rechts */
     align-items: center;
+    width: 100%;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    flex: 1; /* Nimmt Platz ein, um die Mitte zu stabilisieren */
+    text-align: left;
+    white-space: nowrap;
+}
+
+.menu-toggle-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; /* Schiebt den Button nach ganz rechts */
 }
 
 .menu-toggle {
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Verteilt die Bars gleichmäßig */
-    width: 35px;                    /* Feste Breite */
+    width: 30px;                    /* Feste Breite */
     height: 24px;                   /* Feste Höhe */
-    background: transparent;
+    background: none;
     border: none;
     cursor: pointer;
     padding: 0;
@@ -219,6 +234,8 @@ header {
 #resources {
     display: flex;
     gap: 20px;
+    flex: 2; /* Gibt der Mitte mehr Raum */
+    justify-content: center;
 }
 
 .res-item {
@@ -232,11 +249,11 @@ header {
 /* 3. MAIN CONTENT & CARDS                                    */
 /* ----------------------------------------------------------- */
 main {
-    flex-grow: 1; /* Schiebt alles unter sich (den Footer) nach ganz unten */
-    padding: 40px 50px;
-    max-width: 1280px;
-    margin: 0 auto;
+    flex: 1; /* Schiebt alles unter sich (den Footer) nach ganz unten */
     width: 100%;
+    max-width: 1200px; /* Optional: Begrenzt die Inhaltsbreite für bessere Lesbarkeit */
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .main-header h2 {
@@ -336,22 +353,21 @@ input[type="file"] { display: none; }
 .btn-danger { background-color: #721c24; }
 
 footer {
-    background-color: var(--primary-bg);
-    width: 100%; 
+    background-image: linear-gradient(rgba(12, 40, 52, 0.9), rgba(12, 40, 52, 0.9));
+    border-top: 2px solid var(--border-color); /* Linie oben statt unten */
+    color: var(--text-color);
     padding: 20px 0;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Optional: Verhindert, dass der Footer bei viel Inhalt gestaucht wird */
-    flex-shrink: 0; 
+    width: 100%; /* Durchgängig über die ganze Breite */
+    margin-top: auto; /* Zusätzliche Sicherheit für die Positionierung */
 }
 
 .footer-content {
-    /* Optional: Begrenzt die Textbreite analog zum Header/Main */
-    max-width: 1280px;
-    width: 100%;
+    max-width: 1400px; /* Gleiche Breite wie der Header-Content */
+    margin: 0 auto;
+    padding: 0 20px;
     text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.7;
 }
 
 /* ----------------------------------------------------------- */
