@@ -81,6 +81,7 @@
         </div>
         <section class="photo-section">
         <div class="building-card">
+            <img src="./img/antriebstechnik.png" alt="Antriebstechnik" class="building-image">
             <div class="card-content">
                 <h3>Antriebstechnik</h3>
                 <p>Level: <span id="propulsion-level">0</span></p>
@@ -91,6 +92,7 @@
         </div>
 
         <div class="building-card">
+            <img src="./img/ki-automatisierung.png" alt="KI-Automatisierung" class="building-image">
             <div class="card-content">
                 <h3>KI-Automatisierung</h3>
                 <p>Level: <span id="ai-level">0</span></p>
@@ -101,6 +103,7 @@
         </div>
 
         <div class="building-card">
+            <img src="./img/fusionsreaktoren.png" alt="Fusionsreaktoren" class="building-image">
             <div class="card-content">
                 <h3>Fusionsreaktoren</h3>
                 <p>Level: <span id="fusion-level">0</span></p>
@@ -134,6 +137,17 @@
                     <button onclick="buildShip('colony')">BAUEN</button>
                 </div>
             </div>
+
+            <div class="building-card">
+                <img src="./img/logistikschiff.png" alt="Logistikschiff" class="building-image">
+                <div class="card-content">
+                    <h3>Logistikschiffe</h3>
+                    <p>Anzahl: <span id="cargo-count">0</span></p>
+                    <p>Bonus: +5% Metall-Produktion pro Schiff</p>
+                    <p>Kosten: <span id="cargo-cost">150</span> Metall</p>
+                    <button onclick="buildShip('cargo')">BAUEN</button>
+                </div>
+            </div>
         </section>
 
         <div class="main-header">
@@ -141,7 +155,7 @@
         </div>
         <section class="photo-section">
             <div class="building-card">
-                <img src="./img/station.png" alt="Bio-Station" class="building-image">
+                <img src="./img/bio-forschungslabor.png" alt="Bio-Station" class="building-image">
                 <div class="card-content">
                     <h3>Bio-Forschungslabor</h3>
                     <p>Status: <span id="station-status">Nicht gebaut</span></p>

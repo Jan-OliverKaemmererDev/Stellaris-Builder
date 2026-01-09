@@ -9,6 +9,7 @@ let gameState = {
     aiLevel: 0,
     fusionLevel: 0,
     transporterCount: 0,
+    cargoCount: 0,
     colonyCount: 0,
     hasBioStation: false
 };
@@ -120,17 +121,23 @@ function buildStation() {
 }
 
 function buildShip(type) {
-    let cost = (type === 'transporter') ? 50 : 500;
+    let cost = 0;
+    if (type === 'transporter') cost = 50;
+    if (type === 'colony') cost = 500;
+    if (type === 'cargo') cost = 150; // Kosten für das Logistikschiff
+
     if (gameState.metal >= cost) {
         gameState.metal -= cost;
         if (type === 'transporter') gameState.transporterCount++;
         if (type === 'colony') gameState.colonyCount++;
+        if (type === 'cargo') gameState.cargoCount++; // Erhöht die Anzahl
+        
         updateUI();
         saveToLocal();
+    } else {
+        alert("Nicht genug Metall!");
     }
 }
-
-
 
 function updateUI() {
     document.getElementById('metal').innerText = Math.floor(gameState.metal);
@@ -142,6 +149,7 @@ function updateUI() {
     document.getElementById('plant-cost').innerText = Math.floor(15 * Math.pow(1.6, gameState.powerPlantLevel));
     document.getElementById('propulsion-level').innerText = gameState.propulsionLevel;
     document.getElementById('transporter-count').innerText = gameState.transporterCount;
+    document.getElementById('cargo-count').innerText = gameState.cargoCount;
     document.getElementById('station-status').innerText = gameState.hasBioStation ? "Aktiv (Bio-Bonus +20%)" : "Inaktiv";
 }
 
