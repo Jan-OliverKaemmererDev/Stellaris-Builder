@@ -243,6 +243,7 @@ main {
     color: var(--accent-color);
     text-transform: uppercase;
     letter-spacing: 2px;
+    text-align: center;
 }
 
 .photo-section {
