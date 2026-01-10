@@ -31,8 +31,14 @@ function saveToLocal() {
 function calculateOfflineProgress() {
     var now = Date.now();
     var diff = (now - gameState.lastTick) / 1000;
-    if (diff > 60) {
-        gameState.metal += (getProductionPerSecond() * diff);
+    if (diff > 10) {
+        updateEnergyState(); 
+        var prod = getProductionPerSecond();
+        var offlineGains = prod * diff;
+        gameState.metal += offlineGains;
+        alert("Willkommen zurück, Kommandant!\n\nIn deiner Abwesenheit von " + 
+              formatTime(Math.floor(diff)) + " wurden " + 
+              Math.floor(offlineGains).toLocaleString() + " Metall produziert.");
     }
     gameState.lastTick = now;
 }

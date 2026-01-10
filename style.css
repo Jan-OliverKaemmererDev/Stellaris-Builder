@@ -23,15 +23,15 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Mindestens 100% der Viewport-Höhe */
+    min-height: 100vh;
 }
 
 header {
     background-image: linear-gradient(rgba(12, 40, 52, 0.8), rgba(12, 40, 52, 0.8)), 
-                      url('./img/header-background.png'); /* Achte auf die Dateiendung (.jpg, .png etc.) */
+                      url('./img/header-background.png');
     
-    background-size: cover;         /* Bild füllt den ganzen Header aus */
-    background-position: center;    /* Bild wird mittig zentriert */
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
 
     background-color: var(--primary-bg);
@@ -47,10 +47,10 @@ header {
 }
 
 .header-content {
-    max-width: 1400px; /* Erlaubt mehr Breite auf großen Monitoren */
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between; /* Verteilt links, mitte, rechts */
+    justify-content: space-between;
     align-items: center;
     width: 100%;
 }
@@ -58,7 +58,7 @@ header {
 header h1 {
     margin: 0;
     font-size: 1.5rem;
-    flex: 1; /* Nimmt Platz ein, um die Mitte zu stabilisieren */
+    flex: 1;
     text-align: left;
     white-space: nowrap;
 }
@@ -66,39 +66,38 @@ header h1 {
 .menu-toggle-container {
     flex: 1;
     display: flex;
-    justify-content: flex-end; /* Schiebt den Button nach ganz rechts */
+    justify-content: flex-end;
 }
 
 .menu-toggle {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Verteilt die Bars gleichmäßig */
-    width: 30px;                    /* Feste Breite */
-    height: 24px;                   /* Feste Höhe */
+    justify-content: space-between;
+    width: 30px;
+    height: 24px;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
-    z-index: 1100;                  /* Höher als das Side-Menu */
+    z-index: 1100;
     position: relative;
 }
 
 .bar {
     width: 100%;
     height: 4px;
-    background-color: var(--text-color, #F9F8FD); /* Fallback Farbe Weiß */
+    background-color: var(--text-color, #F9F8FD);
     border-radius: 2px;
-    display: block;                 /* Wichtig, damit sie angezeigt werden */
+    display: block;
     transition: all 0.3s ease-in-out;
 }
 
 .side-menu {
     position: fixed;
     top: 0;
-    right: -300px; /* Startposition außerhalb */
+    right: -300px;
     width: 300px;
     height: 100%;
-    /* Hintergrundfarbe mit Transparenz basierend auf deinem accent-color */
     background-color: rgba(7, 24, 32, 0.95); 
     z-index: 1001;
     transition: right 0.3s ease-in-out;
@@ -113,7 +112,7 @@ header h1 {
 }
 
 .side-menu.open {
-    width: 250px; /* Breite wenn offen */
+    width: 250px;
 }
 
 .side-menu ul {
@@ -249,9 +248,9 @@ header h1 {
 /* 3. MAIN CONTENT & CARDS                                    */
 /* ----------------------------------------------------------- */
 main {
-    flex: 1; /* Schiebt alles unter sich (den Footer) nach ganz unten */
+    flex: 1;
     width: 100%;
-    max-width: 1200px; /* Optional: Begrenzt die Inhaltsbreite für bessere Lesbarkeit */
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -294,7 +293,7 @@ main {
     object-fit: cover;
     border-radius: 8px;
     border: 1px solid var(--border-color);
-    flex-shrink: 0; /* Verhindert, dass das Bild gequetscht wird */
+    flex-shrink: 0;
 }
 
 .card-content {
@@ -302,7 +301,7 @@ main {
 }
 
 .building-card button {
-    margin-left: auto; /* Schiebt den Button so weit wie möglich nach rechts */
+    margin-left: auto;
     align-self: center;
 }
 
@@ -354,15 +353,15 @@ input[type="file"] { display: none; }
 
 footer {
     background-image: linear-gradient(rgba(12, 40, 52, 0.9), rgba(12, 40, 52, 0.9));
-    border-top: 2px solid var(--border-color); /* Linie oben statt unten */
+    border-top: 2px solid var(--border-color);
     color: var(--text-color);
     padding: 20px 0;
-    width: 100%; /* Durchgängig über die ganze Breite */
-    margin-top: auto; /* Zusätzliche Sicherheit für die Positionierung */
+    width: 100%;
+    margin-top: auto;
 }
 
 .footer-content {
-    max-width: 1400px; /* Gleiche Breite wie der Header-Content */
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
     text-align: center;
@@ -386,7 +385,6 @@ footer {
 /* ----------------------------------------------------------- */
 
 @media (max-width: 768px) {
-    /* Header-Anpassung: Ressourcen untereinander oder kompakter */
     header {
         padding: 15px 20px;
     }
@@ -405,7 +403,6 @@ footer {
         padding: 5px 10px;
     }
 
-    /* Main-Bereich: Weniger Padding an den Seiten */
     main {
         padding: 20px 15px;
     }
@@ -415,9 +412,8 @@ footer {
         text-align: center;
     }
 
-    /* Karten-Anpassung: Bild und Text untereinander stapeln */
     .building-card {
-        flex-direction: column; /* Bild über den Text */
+        flex-direction: column;
         align-items: center;
         text-align: center;
         padding: 20px;
@@ -425,8 +421,8 @@ footer {
     }
 
     .building-image {
-        width: 100%;       /* Bild nutzt volle Breite der Karte */
-        max-width: 250px;  /* Aber nicht zu riesig */
+        width: 100%;
+        max-width: 250px;
         height: auto;
         aspect-ratio: 1 / 1;
     }
@@ -435,14 +431,12 @@ footer {
         width: 100%;
     }
 
-    /* Button in der mobilen Ansicht zentrieren statt ganz rechts */
     .building-card button {
         margin-left: 0;
         margin-top: 15px;
-        width: 100%; /* Button über die ganze Breite für bessere Klickbarkeit */
+        width: 100%;
     }
 
-    /* Side-Menu: Etwas schmaler für kleine Bildschirme */
     .side-menu {
         width: 280px;
     }
@@ -453,7 +447,6 @@ footer {
     }
 }
 
-/* Extra kleine Bildschirme (z.B. iPhone SE) */
 @media (max-width: 480px) {
     .header-content {
         flex-direction: column;
