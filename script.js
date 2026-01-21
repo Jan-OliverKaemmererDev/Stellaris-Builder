@@ -68,15 +68,19 @@ function updateEnergyState() {
 function getProductionPerSecond() {
     var prod = 1;
     var requiredEnergy = gameState.mineLevel * 2;
-    if (gameState.mineLevel > 0 && gameState.energy >= requiredEnergy) {
+    // KI-Bonus reduziert Energiekosten um 10% pro Level
+    var energyReduction = 1 - (gameState.aiLevel * 0.1);
+    if (energyReduction < 0.1) energyReduction = 0.1; // Minimum 10% Kosten
+    var effectiveRequiredEnergy = requiredEnergy * energyReduction;
+
+    if (gameState.mineLevel > 0 && gameState.energy >= effectiveRequiredEnergy) {
         prod += (gameState.mineLevel * 5);
     } else if (gameState.mineLevel > 0 && gameState.energy > 0) {
-        prod += (gameState.energy / 2) * 5; 
+        prod += (gameState.energy / effectiveRequiredEnergy) * (gameState.mineLevel * 5); 
     }
     var cargoBonus = 1 + (gameState.cargoCount * 0.05);
-    var aiBonus = 1 + (gameState.aiLevel * 0.1);
     var bioBonus = gameState.hasBioStation ? 1.2 : 1;
-    return prod * cargoBonus * aiBonus * bioBonus;
+    return prod * cargoBonus * bioBonus;
 }
 
 function updatePlayTime() {
@@ -120,7 +124,7 @@ function updateResearchDisplay() {
 
 function updateShipAndStationDisplay() {
     setVal('cargo-count', gameState.cargoCount);
-    setVal('cargo-cost', calcCost(150, 1.5, gameState.cargoCount));
+    setVal('cargo-cost', calcCost(2300, 1.5, gameState.cargoCount));
     setVal('transporter-count', gameState.transporterCount);
     setVal('transporter-cost', calcCost(500, 1.6, gameState.transporterCount));
     setVal('colony-count', gameState.colonyCount);
@@ -152,7 +156,7 @@ function upgradeResearch(type) {
 }
 
 function buildShip(type) {
-    if (type === 'cargo') performPurchase('cargoCount', 150, 1.5);
+    if (type === 'cargo') performPurchase('cargoCount', 2300, 1.5);
     if (type === 'transporter') performPurchase('transporterCount', 500, 1.6);
     if (type === 'colony') performPurchase('colonyCount', 1000, 2.0);
     updateUI();
@@ -218,9 +222,18 @@ function importSave(event) {
     var file = event.target.files[0];
     var reader = new FileReader();
     reader.onload = function(e) {
-        applyLoadedData(JSON.parse(e.target.result));
-        saveToLocal();
-        location.reload();
+        try {
+            var loaded = JSON.parse(e.target.result);
+            if (loaded && typeof loaded === 'object') {
+                applyLoadedData(loaded);
+                saveToLocal();
+                location.reload();
+            } else {
+                alert("Ungültiges Dateiformat!");
+            }
+        } catch (err) {
+            alert("Fehler beim Laden der Datei: " + err.message);
+        }
     };
     reader.readAsText(file);
 }
