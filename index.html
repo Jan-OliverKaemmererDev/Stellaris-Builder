@@ -1,186 +1,440 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="./img/favicon.png">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="./img/favicon.png" />
     <title>Stellaris Builder | Single Player</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <header>
-        <div class="header-content">
-            <h1>STELLARIS BUILDER</h1>
+      <div class="header-content">
+        <h1>STELLARIS BUILDER</h1>
 
-            <div id="resources">
-                <div class="res-item">Metall: <span id="metal">0</span></div>
-                <div class="res-item">Energie: <span id="energy">0</span></div>
-            </div>
-
-            <div class="menu-toggle-container">
-                <button class="menu-toggle" onclick="toggleMenu()">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </button>
-            </div>
+        <div id="resources">
+          <div class="res-item">⚙️ Metall: <span id="metal">0</span></div>
+          <div class="res-item">⚡ Energie: <span id="energy">0</span></div>
+          <div class="res-item">🔩 Eisen: <span id="iron">0</span></div>
+          <div class="res-item">🥇 Gold: <span id="gold">0</span></div>
+          <div class="res-item">🥈 Silber: <span id="silver">0</span></div>
+          <div class="res-item">💎 Xenonit: <span id="xenonite">0</span></div>
+          <div class="res-item">💰 Credits: <span id="credits">0</span></div>
+          <div class="res-item">👥 Personal: <span id="personnel">0</span></div>
         </div>
+
+        <div class="menu-toggle-container">
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </button>
+        </div>
+      </div>
     </header>
 
     <div id="sideMenu" class="side-menu" role="navigation">
-        <div class="menu-header">
-            <span class="close-btn" onclick="toggleMenu()">×</span>
-        </div>
-    
-        <div class="menu-links">
-            <div class="menu-title-static">DATEN-ARCHIV</div>
+      <div class="menu-header">
+        <span class="close-btn" onclick="toggleMenu()">×</span>
+      </div>
 
-            <div class="menu-stats" style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); margin-bottom: 10px;">
-                <p style="margin: 0; font-size: 0.8rem; color: var(--accent-color); letter-spacing: 1px;">SPIELZEIT</p>
-                <h2 id="menu-play-time" style="margin: 5px 0 0 0; font-family: monospace;">00:00:00</h2>
-            </div>
-        
-            <a href="#" onclick="downloadSave()">💾 Exportieren</a>
-        
-            <label for="importFile" class="import-link-style">
-            📂 Importieren
-            </label>
-            <input type="file" id="importFile" accept=".json" onchange="importSave(event)" style="display:none;">
-        
-            <hr>
-        
-            <a href="#" onclick="resetGame()" class="danger-link">⚠️ Spielstand löschen</a>
+      <div class="menu-links">
+        <div class="menu-title-static">DATEN-ARCHIV</div>
+
+        <div
+          class="menu-stats"
+          style="
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+          "
+        >
+          <p
+            style="
+              margin: 0;
+              font-size: 0.8rem;
+              color: var(--accent-color);
+              letter-spacing: 1px;
+            "
+          >
+            SPIELZEIT
+          </p>
+          <h2
+            id="menu-play-time"
+            style="margin: 5px 0 0 0; font-family: monospace"
+          >
+            00:00:00
+          </h2>
         </div>
+
+        <a href="#" onclick="downloadSave()">💾 Exportieren</a>
+
+        <label for="importFile" class="import-link-style">
+          📂 Importieren
+        </label>
+        <input
+          type="file"
+          id="importFile"
+          accept=".json"
+          onchange="importSave(event)"
+          style="display: none"
+        />
+
+        <hr />
+
+        <a href="#" onclick="resetGame()" class="danger-link"
+          >⚠️ Spielstand löschen</a
+        >
+      </div>
     </div>
 
     <main>
-        <div class="main-header">
-            <h2>Minen und Energie</h2>
-        </div>
+      <div class="main-header">
+        <h2>Minen und Energie</h2>
+      </div>
 
-        <section class="photo-section">
-            <div class="building-card">
-                <img src="./img/metallmine.png" alt="Metallmine" class="building-image">
-
-                <div class="card-content">
-                    <h3>Metallmine</h3>
-                    <p>Level: <span id="mine-level">0</span></p>
-                    <p>Kosten: <span id="mine-cost">10</span> Metall</p>
-                    <button onclick="upgradeBuilding('mine')">AUSBAUEN</button>
-                </div>
-            </div>
-
-            <div class="building-card">
-                <img src="./img/solarkraftwerk.png" alt="Solarkraftwerk" class="building-image">
-
-                <div class="card-content">
-                    <h3>Solarkraftwerk</h3>
-                    <p>Level: <span id="plant-level">0</span></p>
-                    <p>Kosten: <span id="plant-cost">15</span> Metall</p>
-                    <button onclick="upgradeBuilding('powerPlant')">AUSBAUEN</button>
-                </div>
-            </div>
-        </section>
-
-        <div class="main-header">
-            <h2>Forschungszentrum</h2>
-        </div>
-        <section class="photo-section">
+      <section class="photo-section">
         <div class="building-card">
-            <img src="./img/antriebstechnik.png" alt="Antrieb" class="building-image">
-            <div class="card-content">
-                <h3>Antriebstechnik</h3>
-                <p>Level: <span id="propulsion-level">0</span></p>
-                <p>Effekt: Schaltet schnellere Schiffe frei</p>
-                <p>Kosten: <span id="propulsion-cost">100</span> Metall</p>
-                <button onclick="upgradeResearch('propulsion')">FORSCHEN</button>
-            </div>
+          <img
+            src="./img/metallmine.png"
+            alt="Metallmine"
+            class="building-image"
+          />
+
+          <div class="card-content">
+            <h3>Metallmine</h3>
+            <p>Level: <span id="mine-level">0</span></p>
+            <p>Kosten: <span id="mine-cost">10</span> Metall</p>
+            <button onclick="upgradeBuilding('mine')">AUSBAUEN</button>
+          </div>
         </div>
 
         <div class="building-card">
-            <img src="./img/ki-automatisierung.png" alt="KI-Automatisierung" class="building-image">
-            <div class="card-content">
-                <h3>KI-Automatisierung</h3>
-                <p>Level: <span id="ai-level">0</span></p>
-                <p>Bonus: Reduziert Energiekosten der Minen</p>
-                <p>Kosten: <span id="ai-cost">150</span> Metall</p>
-                <button onclick="upgradeResearch('ai')">FORSCHEN</button>
-            </div>
+          <img
+            src="./img/solarkraftwerk.png"
+            alt="Solarkraftwerk"
+            class="building-image"
+          />
+
+          <div class="card-content">
+            <h3>Solarkraftwerk</h3>
+            <p>Level: <span id="plant-level">0</span></p>
+            <p>Kosten: <span id="plant-cost">15</span> Metall</p>
+            <button onclick="upgradeBuilding('powerPlant')">AUSBAUEN</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="main-header">
+        <h2>Infrastruktur</h2>
+      </div>
+      <section class="photo-section">
+        <div class="building-card">
+          <img
+            src="./img/orbital-shipyard.png"
+            alt="Orbitale Schiffswerft"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Orbitale Schiffswerft</h3>
+            <p>Status: <span id="shipyard-status">Nicht gebaut</span></p>
+            <p>Effekt: Ermöglicht Schiffsbau</p>
+            <p>Kosten: 2000 Metall, 500 Eisen, 10 Personal</p>
+            <button id="shipyard-btn" onclick="buildInfrastructure('shipyard')">
+              ERRICHTEN
+            </button>
+          </div>
         </div>
 
         <div class="building-card">
-            <img src="./img/fusionsreaktoren.png" alt="Fusionsreaktoren" class="building-image">
-            <div class="card-content">
-                <h3>Fusionsreaktoren</h3>
-                <p>Level: <span id="fusion-level">0</span></p>
-                <p>Bonus: Höhere Energieausbeute</p>
-                <p>Kosten: <span id="fusion-cost">200</span> Metall</p>
-                <button onclick="upgradeResearch('fusion')">FORSCHEN</button>
-            </div>
+          <img
+            src="./img/large-station.png"
+            alt="Große Raumstation"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Große Raumstation</h3>
+            <p>Status: <span id="station-status">Nicht gebaut</span></p>
+            <p>Effekt: Ermöglicht Personal-Rekrutierung</p>
+            <p>Kosten: 1500 Metall, 300 Eisen, 20 Personal</p>
+            <button id="station-btn" onclick="buildInfrastructure('station')">
+              ERRICHTEN
+            </button>
+          </div>
         </div>
-        </section>
 
-        <div class="main-header">
-            <h2>Flotte</h2>
+        <div class="building-card">
+          <img
+            src="./img/trading-post.png"
+            alt="Handelsposten"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Handelsposten</h3>
+            <p>Status: <span id="trading-status">Nicht gebaut</span></p>
+            <p>Effekt: Bessere Handelspreise (+10%)</p>
+            <p>Kosten: 800 Metall, 500 Credits</p>
+            <button id="trading-btn" onclick="buildInfrastructure('trading')">
+              ERRICHTEN
+            </button>
+          </div>
         </div>
-        <section class="photo-section">
-            <div class="building-card">
-                <img src="./img/transportschiffe.png" alt="Transportschiffe" class="building-image">
-                <div class="card-content">
-                    <h3>Transportschiffe</h3>
-                    <p>Anzahl: <span id="transporter-count">0</span></p>
-                    <p>Kosten: <span id="transporter-cost">500</span> Metall</p>
-                    <button onclick="buildShip('transporter')">BAUEN</button>
-                </div>
-            </div>
 
-            <div class="building-card">
-                <img src="./img/kolonisierungsschiffe.png" alt="kolonisierungsschiffe" class="building-image">
-                <div class="card-content">
-                    <h3>Kolonisierungsschiffe</h3>
-                    <p>Anzahl: <span id="colony-count">0</span></p>
-                    <p>Kosten: <span id="colony-cost">1000</span> Metall</p>
-                    <button onclick="buildShip('colony')">BAUEN</button>
-                </div>
-            </div>
-
-            <div class="building-card">
-                <img src="./img/logistikschiff.png" alt="Logistikschiff" class="building-image">
-                <div class="card-content">
-                    <h3>Logistikschiffe</h3>
-                    <p>Anzahl: <span id="cargo-count">0</span></p>
-                    <p>Bonus: +5% Metall-Produktion pro Schiff</p>
-                    <p>Kosten: <span id="cargo-cost">2300</span> Metall</p>
-                    <button onclick="buildShip('cargo')">BAUEN</button>
-                </div>
-            </div>
-        </section>
-
-        <div class="main-header">
-            <h2>Sonnensystem-Station</h2>
+        <div class="building-card">
+          <img
+            src="./img/refinery.png"
+            alt="Raffinerie"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Raffinerie</h3>
+            <p>Status: <span id="refinery-status">Nicht gebaut</span></p>
+            <p>Effekt: Verbesserte Ressourcenverarbeitung</p>
+            <p>Kosten: 1200 Metall, 400 Eisen, 5 Personal</p>
+            <button id="refinery-btn" onclick="buildInfrastructure('refinery')">
+              ERRICHTEN
+            </button>
+          </div>
         </div>
-        <section class="photo-section">
-            <div class="building-card">
-                <img src="./img/bio-forschungslabor.png" alt="Bio-Station" class="building-image">
-                <div class="card-content">
-                    <h3>Bio-Forschungslabor</h3>
-                    <p>Status: <span id="station-status">Nicht gebaut</span></p>
-                    <p>Effekt: +20% Metall-Produktion</p>
-                    <p>Kosten: 2000 Metall</p>
-                    <button id="station-btn" onclick="buildStation()">STATION ERRICHTEN</button>
-                </div>
+      </section>
+
+      <div class="main-header">
+        <h2>Mining-Operationen</h2>
+      </div>
+      <section class="photo-section">
+        <div class="building-card">
+          <img
+            src="./img/mining-ship.png"
+            alt="Mining-Schiff"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Mining-Schiffe</h3>
+            <p>Anzahl: <span id="mining-ship-count">0</span></p>
+            <p>Verfügbar: <span id="idle-mining-ships">0</span></p>
+            <p>
+              Kosten: <span id="mining-ship-cost">300</span> Metall, 5 Personal
+            </p>
+            <button onclick="buildMiningShip()">SCHIFF BAUEN</button>
+          </div>
+        </div>
+
+        <div
+          class="building-card full-width"
+          style="
+            background:
+              linear-gradient(rgba(12, 40, 52, 0.9), rgba(12, 40, 52, 0.9)),
+              url(&quot;./img/asteroid-belt.png&quot;) center/cover;
+          "
+        >
+          <div class="card-content" style="width: 100%">
+            <h3>Asteroidengürtel-Mining</h3>
+            <p>
+              Schicke Mining-Schiffe zum Asteroidengürtel, um wertvolle
+              Ressourcen zu sammeln!
+            </p>
+            <p style="font-size: 0.9em; opacity: 0.8">
+              Ertrag pro Mission: 20-40 Eisen, 10-20 Silber, 5-10 Gold, 1-3
+              Xenonit (30% Chance)
+            </p>
+            <button onclick="sendShipToMine()" style="margin-top: 10px">
+              ZUM ASTEROIDENGÜRTEL SCHICKEN
+            </button>
+
+            <div style="margin-top: 20px">
+              <h4 style="color: var(--accent-color); margin-bottom: 10px">
+                Aktive Operationen:
+              </h4>
+              <div id="mining-operations"></div>
             </div>
-        </section>     
+          </div>
+        </div>
+      </section>
+
+      <div class="main-header">
+        <h2>Handel & Wirtschaft</h2>
+      </div>
+      <section class="photo-section">
+        <div class="building-card">
+          <div class="card-content" style="width: 100%">
+            <h3>Personal-Rekrutierung</h3>
+            <p>Heuere Personal an, um deine Schiffe zu bemannen!</p>
+            <p>Kosten: 1000 Credits für 10 Personal</p>
+            <p style="font-size: 0.85em; opacity: 0.7">
+              Benötigt: Große Raumstation
+            </p>
+            <button onclick="hirePersonnel()">PERSONAL ANHEUERN</button>
+          </div>
+        </div>
+
+        <div class="building-card">
+          <div class="card-content" style="width: 100%">
+            <h3>Ressourcen Verkaufen</h3>
+            <div class="trade-grid">
+              <div class="trade-item">
+                <p><strong>🔩 Eisen</strong></p>
+                <p>Vorrat: <span id="iron-amount">0</span></p>
+                <p>Preis: 10 Credits/Einheit</p>
+                <button onclick="sellAll('iron')">ALLES VERKAUFEN</button>
+              </div>
+              <div class="trade-item">
+                <p><strong>🥈 Silber</strong></p>
+                <p>Vorrat: <span id="silver-amount">0</span></p>
+                <p>Preis: 20 Credits/Einheit</p>
+                <button onclick="sellAll('silver')">ALLES VERKAUFEN</button>
+              </div>
+              <div class="trade-item">
+                <p><strong>🥇 Gold</strong></p>
+                <p>Vorrat: <span id="gold-amount">0</span></p>
+                <p>Preis: 50 Credits/Einheit</p>
+                <button onclick="sellAll('gold')">ALLES VERKAUFEN</button>
+              </div>
+              <div class="trade-item">
+                <p><strong>💎 Xenonit</strong></p>
+                <p>Vorrat: <span id="xenonite-amount">0</span></p>
+                <p>Preis: 200 Credits/Einheit</p>
+                <button onclick="sellAll('xenonite')">ALLES VERKAUFEN</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="main-header">
+        <h2>Forschungszentrum</h2>
+      </div>
+      <section class="photo-section">
+        <div class="building-card">
+          <img
+            src="./img/antriebstechnik.png"
+            alt="Antrieb"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Antriebstechnik</h3>
+            <p>Level: <span id="propulsion-level">0</span></p>
+            <p>Effekt: Schaltet schnellere Schiffe frei</p>
+            <p>Kosten: <span id="propulsion-cost">100</span> Metall</p>
+            <button onclick="upgradeResearch('propulsion')">FORSCHEN</button>
+          </div>
+        </div>
+
+        <div class="building-card">
+          <img
+            src="./img/ki-automatisierung.png"
+            alt="KI-Automatisierung"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>KI-Automatisierung</h3>
+            <p>Level: <span id="ai-level">0</span></p>
+            <p>Bonus: Reduziert Energiekosten der Minen</p>
+            <p>Kosten: <span id="ai-cost">150</span> Metall</p>
+            <button onclick="upgradeResearch('ai')">FORSCHEN</button>
+          </div>
+        </div>
+
+        <div class="building-card">
+          <img
+            src="./img/fusionsreaktoren.png"
+            alt="Fusionsreaktoren"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Fusionsreaktoren</h3>
+            <p>Level: <span id="fusion-level">0</span></p>
+            <p>Bonus: Höhere Energieausbeute</p>
+            <p>Kosten: <span id="fusion-cost">200</span> Metall</p>
+            <button onclick="upgradeResearch('fusion')">FORSCHEN</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="main-header">
+        <h2>Flotte</h2>
+      </div>
+      <section class="photo-section">
+        <div class="building-card">
+          <img
+            src="./img/transportschiffe.png"
+            alt="Transportschiffe"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Transportschiffe</h3>
+            <p>Anzahl: <span id="transporter-count">0</span></p>
+            <p>
+              Kosten: <span id="transporter-cost">500</span> Metall, 8 Personal
+            </p>
+            <button id="transporter-btn" onclick="buildShip('transporter')">
+              BAUEN
+            </button>
+          </div>
+        </div>
+
+        <div class="building-card">
+          <img
+            src="./img/kolonisierungsschiffe.png"
+            alt="kolonisierungsschiffe"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Kolonisierungsschiffe</h3>
+            <p>Anzahl: <span id="colony-count">0</span></p>
+            <p>
+              Kosten: <span id="colony-cost">1000</span> Metall, 25 Personal
+            </p>
+            <button id="colony-btn" onclick="buildShip('colony')">BAUEN</button>
+          </div>
+        </div>
+
+        <div class="building-card">
+          <img
+            src="./img/logistikschiff.png"
+            alt="Logistikschiff"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Logistikschiffe</h3>
+            <p>Anzahl: <span id="cargo-count">0</span></p>
+            <p>Bonus: +5% Metall-Produktion pro Schiff</p>
+            <p>Kosten: <span id="cargo-cost">2300</span> Metall, 15 Personal</p>
+            <button id="cargo-btn" onclick="buildShip('cargo')">BAUEN</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="main-header">
+        <h2>Sonnensystem-Station</h2>
+      </div>
+      <section class="photo-section">
+        <div class="building-card">
+          <img
+            src="./img/bio-forschungslabor.png"
+            alt="Bio-Station"
+            class="building-image"
+          />
+          <div class="card-content">
+            <h3>Bio-Forschungslabor</h3>
+            <p>Status: <span id="station-status">Nicht gebaut</span></p>
+            <p>Effekt: +20% Metall-Produktion</p>
+            <p>Kosten: 2000 Metall</p>
+            <button id="station-btn" onclick="buildStation()">
+              STATION ERRICHTEN
+            </button>
+          </div>
+        </div>
+      </section>
     </main>
-    
+
     <footer>
-        <div class="footer-content">
-            <p>© 2026 Stellaris Builder - Friedliche Expansion</p>
-            <a href="impressum.html">Impressum</a>
-        </div>
+      <div class="footer-content">
+        <p>© 2026 Stellaris Builder - Friedliche Expansion</p>
+        <a href="impressum.html">Impressum</a>
+      </div>
     </footer>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
